@@ -8,6 +8,7 @@ const windowCreator = require('./lib/window-creator')
 const windowChanger = require('./lib/window-changer')
 const windowMaxer = require('./lib/window-maxer')
 const windowSplitter = require('./lib/window-splitter')
+const windowSwitcher = require('./lib/window-switcher')
 
 function findAdjacentGrids (d, displays) {
   return Object.assign({}, ...displays.map(candidate => {
@@ -42,6 +43,7 @@ module.exports = function screenGrid () {
     windowCreator(state),
     windowChanger(state),
     windowMaxer(state),
-    windowSplitter(state)
+    windowSplitter(state),
+    windowSwitcher(state)
   )
 }
