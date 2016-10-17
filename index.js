@@ -1,14 +1,13 @@
 'use strict'
 
 const electron = require('electron')
-const BrowserWindow = electron.BrowserWindow
-const TerminalWindow = require('electron-terminal-window')
 
 const Grid = require('grid')
 
 const windowCreator = require('./lib/window-creator')
 const windowChanger = require('./lib/window-changer')
 const windowMaxer = require('./lib/window-maxer')
+const windowSplitter = require('./lib/window-splitter')
 
 function findAdjacentGrids (d, displays) {
   return Object.assign({}, ...displays.map(candidate => {
@@ -42,6 +41,7 @@ module.exports = function screenGrid () {
   return Object.assign(state,
     windowCreator(state),
     windowChanger(state),
-    windowMaxer(state)
+    windowMaxer(state),
+    windowSplitter(state)
   )
 }
