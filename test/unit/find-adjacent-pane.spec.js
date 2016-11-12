@@ -189,3 +189,27 @@ test('findAdjacentPane(pane, direction): ' +
     'returns the next pane below'
   )
 })
+
+test('findAdjacentPane(pane, direction): returns adjacent pane first', t => {
+  t.plan(1)
+  const pane = {
+    grid: {
+      panes: [
+        {id: 1, x: 200, y: 0, width: 100, height: 100},
+        {id: 2, x: 200, y: 100, width: 100, height: 100},
+        {id: 3, x: 0, y: 100, width: 100, height: 100},
+        {id: 4, x: 0, y: 200, width: 100, height: 100}
+      ]
+    },
+    id: 1,
+    x: 200,
+    y: 0,
+    width: 100,
+    height: 100
+  }
+  t.deepEquals(
+    findAdjacentPane(pane, 'down'),
+    {id: 2, x: 200, y: 100, width: 100, height: 100},
+    'returns adjacent pane first'
+  )
+})
