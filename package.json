@@ -4,11 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard && tape ./test/unit/*.spec.js --tap | tap-spec"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "electron": "^1.4.2"
+  },
+  "devDependencies": {
+    "proxyquire": "^1.7.10",
+    "standard": "^8.5.0",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.6.2"
   }
 }
