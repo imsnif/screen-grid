@@ -176,3 +176,57 @@ test('switchWindow(direction): focus to pane at adjacent grid (down) if no adjac
   switchWindow(direction)
   t.ok(focus.calledOnce, 'focus method of pane at adjacent grid called')
 })
+
+test('switchWindowContents(direction): switches between panes at direction', t => {
+  t.plan(1)
+  const direction = 'left'
+  const switchPanes = sinon.spy()
+  const grid = {switchPanes}
+  const pane = {id: 1, grid}
+  const grids = [ grid ]
+  const findAdjacentPane = sinon.stub()
+  const adjacentPane = {id: 10}
+  findAdjacentPane.withArgs(pane, direction).returns(adjacentPane)
+  const { switchWindowContents } = stubWindowSwitcher(pane, grid, findAdjacentPane)({grids})
+  switchWindowContents(direction)
+  t.ok(
+    switchPanes.calledWith(pane.id, adjacentPane.id),
+    'switchPanes of grid called with proper args'
+  )
+})
+
+test('switchWindowContents(direction): no op if no focused window', t => {
+  t.plan(1)
+  const direction = 'left'
+  const switchPanes = sinon.spy()
+  const grid = {switchPanes}
+  const pane = {id: 1, grid}
+  const grids = [ grid ]
+  const findAdjacentPane = sinon.stub()
+  const adjacentPane = {id: 10}
+  findAdjacentPane.withArgs(pane, direction).returns(adjacentPane)
+  const { switchWindowContents } =
+    stubWindowSwitcherNoFocusedWin(pane, grid, findAdjacentPane)({grids})
+  switchWindowContents(direction)
+  t.ok(
+    switchPanes.notCalled,
+    'no-op when no focused window'
+  )
+})
+
+test('switchWindowContents(direction): no op if no adjacent pane', t => {
+  t.plan(1)
+  const direction = 'left'
+  const switchPanes = sinon.spy()
+  const grid = {switchPanes}
+  const pane = {id: 1, grid}
+  const grids = [ grid ]
+  const findAdjacentPane = sinon.stub()
+  findAdjacentPane.withArgs(pane, direction).returns()
+  const { switchWindowContents } = stubWindowSwitcher(pane, grid, findAdjacentPane)({grids})
+  switchWindowContents(direction)
+  t.ok(
+    switchPanes.notCalled,
+    'no-op when no adjacent pane'
+  )
+})
