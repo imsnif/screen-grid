@@ -16,16 +16,15 @@ function stubWindowMaxerNoFocusedPane (pane) {
   })
 }
 
-test('maxSize(params): maxes size of focused pane', t => {
+test('maxSize(direction): maxes size of focused pane', t => {
   t.plan(1)
   const pane = {maxSize: sinon.spy()}
   const grids = ['grid1', 'grid2']
   const { maxSize } = stubWindowMaxer(pane)({grids})
-  const params = {param1: 1, param2: 2}
-  maxSize(params)
+  maxSize('left')
   t.ok(
-    pane.maxSize.calledWith(params),
-    'params passed to maxSize method of focused pane'
+    pane.maxSize.calledWith({left: true}),
+    'direction formatted and passed to maxSize of pane'
   )
 })
 
@@ -39,25 +38,23 @@ test('maxSize(params): no op when there is no focused window', t => {
   t.ok(pane.maxSize.notCalled, 'no op when no focused window')
 })
 
-test('maxLoc(params): maxes location of focused pane', t => {
+test('maxLoc(direction): maxes location of focused pane', t => {
   t.plan(1)
   const pane = {maxOrSkipLoc: sinon.spy()}
   const grids = ['grid1', 'grid2']
   const { maxLoc } = stubWindowMaxer(pane)({grids})
-  const params = {param1: 1, param2: 2}
-  maxLoc(params)
+  maxLoc('left')
   t.ok(
-    pane.maxOrSkipLoc.calledWith(params),
-    'params passed to maxOrSkipLoc method of focused pane'
+    pane.maxOrSkipLoc.calledWith({left: true}),
+    'direction formatted and passed to maxOrSkipLoc'
   )
 })
 
-test('maxLoc(params): no op when there is no focused window', t => {
+test('maxLoc(direction): no op when there is no focused window', t => {
   t.plan(1)
   const pane = {maxOrSkipLoc: sinon.spy()}
   const grids = ['grid1', 'grid2']
   const { maxLoc } = stubWindowMaxerNoFocusedPane(pane)({grids})
-  const params = {param1: 1, param2: 2}
-  maxLoc(params)
+  maxLoc('left')
   t.ok(pane.maxOrSkipLoc.notCalled, 'no op when no focused window')
 })
