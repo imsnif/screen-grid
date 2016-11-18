@@ -268,3 +268,49 @@ test('decreaseAndFillCurWinSize(direction, amount): ' +
   decreaseAndFillCurWinSize('left', 30)
   t.ok(createWindow.notCalled, 'no new windows created')
 })
+
+test('decreaseCurWinSize(direction, amount): ' +
+     'decreases focused pane size directionally', t => {
+  t.plan(1)
+  const decreaseSizeDirectional = sinon.spy()
+  const pane = {id: 1, decreaseSizeDirectional}
+  const { decreaseCurWinSize } = stubWindowChanger(pane)({})
+  decreaseCurWinSize('left', 30)
+  t.ok(
+    decreaseSizeDirectional.calledWith('left', 30),
+    'decreaseSizeDirectional called with proper args'
+  )
+})
+
+test('decreaseCurWinSize(direction, amount): ' +
+     'no-op if decreaseSizeDirectional throws', t => {
+  t.plan(1)
+  const decreaseSizeDirectional = sinon.stub().throws()
+  const pane = {id: 1, decreaseSizeDirectional}
+  const { decreaseCurWinSize } = stubWindowChanger(pane)({})
+  decreaseCurWinSize('left', 30)
+  t.pass('no-op')
+})
+
+test('increaseCurWinSize(direction, amount): ' +
+     'decreases focused pane size directionally', t => {
+  t.plan(1)
+  const increaseSizeDirectional = sinon.spy()
+  const pane = {id: 1, increaseSizeDirectional}
+  const { increaseCurWinSize } = stubWindowChanger(pane)({})
+  increaseCurWinSize('left', 30)
+  t.ok(
+    increaseSizeDirectional.calledWith('left', 30),
+    'decreaseSizeDirectional called with proper args'
+  )
+})
+
+test('increaseCurWinSize(direction, amount): ' +
+     'no-op if increaseSizeDirectional throws', t => {
+  t.plan(1)
+  const increaseSizeDirectional = sinon.stub().throws()
+  const pane = {id: 1, increaseSizeDirectional}
+  const { increaseCurWinSize } = stubWindowChanger(pane)({})
+  increaseCurWinSize('left', 30)
+  t.pass('no-op')
+})
