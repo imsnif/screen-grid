@@ -1,6 +1,7 @@
 const test = require('tape')
 const sinon = require('sinon')
 const proxyquire = require('proxyquire')
+const EventEmitter = require('events')
 
 function stubWindowChanger (pane) {
   return proxyquire('../../lib/window-changer', {
@@ -313,4 +314,100 @@ test('increaseCurWinSize(direction, amount): ' +
   const { increaseCurWinSize } = stubWindowChanger(pane)({})
   increaseCurWinSize('left', 30)
   t.pass('no-op')
+})
+
+test('toggleCurrentWinFullSize(): changes win to grid size if it is not', t => {
+  t.plan(2)
+  const wrapped = Object.assign(new EventEmitter(), {
+    getBounds: () => ({x: 1000, y: 1000, width: 100, height: 100}),
+    setBounds: sinon.spy()
+  })
+  const grid = {
+    offset: {x: 1000, y: 1000},
+    height: 500,
+    width: 500
+  }
+  const pane = {
+    id: 1,
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    grid,
+    wrapped
+  }
+  const { toggleCurrentWinFullSize } = stubWindowChanger(pane)({})
+  toggleCurrentWinFullSize()
+  t.equals(
+    wrapped.listeners('blur').length, 1,
+    'listener added to blur event'
+  )
+  t.ok(
+    wrapped.setBounds.calledWith({width: 500, height: 500, x: 1000, y: 1000}),
+    'setBounds of wrapped window called with proper full screen and offset'
+  )
+})
+
+test('toggleCurrentWinFullSize(): changes win to orig size ' +
+     'if its size differs from its original', t => {
+  t.plan(1)
+  const wrapped = Object.assign(new EventEmitter(), {
+    getBounds: () => ({x: 1000, y: 1000, width: 500, height: 500}),
+    setBounds: sinon.spy()
+  })
+  const grid = {
+    offset: {x: 1000, y: 1000},
+    height: 500,
+    width: 500
+  }
+  const pane = {
+    id: 1,
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    grid,
+    wrapped
+  }
+  const { toggleCurrentWinFullSize } = stubWindowChanger(pane)({})
+  toggleCurrentWinFullSize()
+  t.ok(
+    wrapped.setBounds.calledWith({width: 100, height: 100, x: 1000, y: 1000}),
+    'setBounds of wrapped window called with orig size and offset'
+  )
+})
+
+test('toggleCurrentWinFullSize(): changes win back to orig size ' +
+     'if it loses focus to another pane on screen', t => {
+  t.plan(2)
+  const wrapped = Object.assign(new EventEmitter(), {
+    getBounds: () => ({x: 1000, y: 1000, width: 100, height: 100}),
+    setBounds: sinon.spy()
+  })
+  const grid = {
+    offset: {x: 1000, y: 1000},
+    height: 500,
+    width: 500,
+    panes: [{wrapped: {isFocused: () => true}}]
+  }
+  const pane = {
+    id: 1,
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    grid,
+    wrapped
+  }
+  const { toggleCurrentWinFullSize } = stubWindowChanger(pane)({})
+  toggleCurrentWinFullSize()
+  wrapped.emit('blur')
+  t.ok(
+    wrapped.setBounds.calledWith({x: 1000, y: 1000, width: 100, height: 100}),
+    'setBounds called with original pane size and grid offset'
+  )
+  t.equals(
+    wrapped.listeners('blur').length, 0,
+    'listener removed once window returned to original size'
+  )
 })
