@@ -162,6 +162,25 @@ test('increaseAndFillCurWinSize(direction, amount, winConstructor, opts, display
   ), 'second window created in second gap with proper params')
 })
 
+test('increaseAndFillCurWinSize(direction, amount, winConstructor, opts, displayId): ' +
+     'no-op if no focused window', t => {
+  t.plan(3)
+  const increaseAndFillSize = sinon.spy()
+  const maxAllPanes = sinon.spy()
+  const findGaps = () => [
+    {x: 0, y: 0, width: 100, height: 100},
+    {x: 100, y: 0, width: 100, height: 100}
+  ]
+  const grid = {findGaps, maxAllPanes}
+  const pane = {id: 1, increaseAndFillSize, grid, wrapped: {constructor: 1}}
+  const createWindow = sinon.spy()
+  const { increaseAndFillCurWinSize } = stubWindowChangerNoFocusedWin(pane)({createWindow})
+  increaseAndFillCurWinSize('left', 30, 'winConstructor', {a: 1, b: 2}, 1)
+  t.ok(increaseAndFillSize.notCalled, 'pane increaseandFillSize not called')
+  t.ok(maxAllPanes.notCalled, 'maxAllPanes not called')
+  t.ok(createWindow.notCalled, 'createWindow not called')
+})
+
 test('increaseAndFillCurWinSize(direction, amount): ' +
      'does not fill grid if failed to increase pane size', t => {
   t.plan(2)
@@ -238,6 +257,25 @@ test('decreaseAndFillCurWinSize(direction, amount, winConstructor, opts, display
   ), 'second window created in second gap with proper params')
 })
 
+test('decreaseAndFillCurWinSize(direction, amount, winConstructor, opts, displayId): ' +
+     'no-op if no focused window', t => {
+  t.plan(3)
+  const decreaseSizeDirectional = sinon.spy()
+  const maxAllPanes = sinon.spy()
+  const findGaps = () => [
+    {x: 0, y: 0, width: 100, height: 100},
+    {x: 100, y: 0, width: 100, height: 100}
+  ]
+  const grid = {findGaps, maxAllPanes}
+  const pane = {id: 1, decreaseSizeDirectional, grid, wrapped: {constructor: 1}}
+  const createWindow = sinon.spy()
+  const { decreaseAndFillCurWinSize } = stubWindowChangerNoFocusedWin(pane)({createWindow})
+  decreaseAndFillCurWinSize('left', 30, 'winConstructor', {a: 1, b: 2}, 1)
+  t.ok(decreaseSizeDirectional.notCalled, 'pane increaseandFillSize not called')
+  t.ok(maxAllPanes.notCalled, 'maxAllPanes not called')
+  t.ok(createWindow.notCalled, 'createWindow not called')
+})
+
 test('decreaseAndFillCurWinSize(direction, amount): ' +
      'does not fill grid if failed to decrease pane size', t => {
   t.plan(2)
@@ -284,6 +322,19 @@ test('decreaseCurWinSize(direction, amount): ' +
 })
 
 test('decreaseCurWinSize(direction, amount): ' +
+     'no-op if no focused window', t => {
+  t.plan(1)
+  const decreaseSizeDirectional = sinon.spy()
+  const pane = {id: 1, decreaseSizeDirectional}
+  const { decreaseCurWinSize } = stubWindowChangerNoFocusedWin(pane)({})
+  decreaseCurWinSize('left', 30)
+  t.ok(
+    decreaseSizeDirectional.notCalled,
+    'decreaseSizeDirectional not called'
+  )
+})
+
+test('decreaseCurWinSize(direction, amount): ' +
      'no-op if decreaseSizeDirectional throws', t => {
   t.plan(1)
   const decreaseSizeDirectional = sinon.stub().throws()
@@ -302,7 +353,20 @@ test('increaseCurWinSize(direction, amount): ' +
   increaseCurWinSize('left', 30)
   t.ok(
     increaseSizeDirectional.calledWith('left', 30),
-    'decreaseSizeDirectional called with proper args'
+    'increaseSizeDirectional called with proper args'
+  )
+})
+
+test('increaseCurWinSize(direction, amount): ' +
+     'no-op if no focused window', t => {
+  t.plan(1)
+  const increaseSizeDirectional = sinon.spy()
+  const pane = {id: 1, increaseSizeDirectional}
+  const { increaseCurWinSize } = stubWindowChangerNoFocusedWin(pane)({})
+  increaseCurWinSize('left', 30)
+  t.ok(
+    increaseSizeDirectional.notCalled,
+    'increaseSizeDirectional not called'
   )
 })
 
@@ -345,6 +409,38 @@ test('toggleCurrentWinFullSize(): changes win to grid size if it is not', t => {
   t.ok(
     wrapped.setBounds.calledWith({width: 500, height: 500, x: 1000, y: 1000}),
     'setBounds of wrapped window called with proper full screen and offset'
+  )
+})
+
+test('toggleCurrentWinFullSize(): no-op if no focused window', t => {
+  t.plan(2)
+  const wrapped = Object.assign(new EventEmitter(), {
+    getBounds: () => ({x: 1000, y: 1000, width: 100, height: 100}),
+    setBounds: sinon.spy()
+  })
+  const grid = {
+    offset: {x: 1000, y: 1000},
+    height: 500,
+    width: 500
+  }
+  const pane = {
+    id: 1,
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    grid,
+    wrapped
+  }
+  const { toggleCurrentWinFullSize } = stubWindowChangerNoFocusedWin(pane)({})
+  toggleCurrentWinFullSize()
+  t.equals(
+    wrapped.listeners('blur').length, 0,
+    'listener not added to blur event'
+  )
+  t.ok(
+    wrapped.setBounds.notCalled,
+    'setBounds method of wrapped window not called'
   )
 })
 
