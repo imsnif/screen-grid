@@ -9,7 +9,7 @@ function stubWindowCreator () {
 }
 
 test('createWindow(gridId, winConstructor, opts): ' +
-     'adds window to specified pane', t => {
+     'adds window to specified grid', t => {
   t.plan(2)
   const grids = [
     {id: 1, add: sinon.spy()},
@@ -25,6 +25,17 @@ test('createWindow(gridId, winConstructor, opts): ' +
     grids[1].add.notCalled,
     'window not added to second grid'
   )
+})
+
+test('createWindow(gridId, winConstructor, opts): ' +
+     'no-op if failed to add window to grid', t => {
+  t.plan(1)
+  const grids = [
+    {id: 1, add: sinon.stub().throws()}
+  ]
+  const { createWindow } = stubWindowCreator()({grids})
+  createWindow(1, 'winConstructor', {x: 0, y: 0, width: 100, height: 100})
+  t.pass('no-op')
 })
 
 test('createWindow(null, winConstructor, opts): ' +
@@ -47,7 +58,7 @@ test('createWindow(null, winConstructor, opts): ' +
 })
 
 test('createWindow(gridId, winConstructor, opts): ' +
-     'adds window to focused with maxSize if the option is given', t => {
+     'adds window to focused grid with maxSize if the option is given', t => {
   t.plan(2)
   const grids = [
     {id: 1, add: sinon.spy(), width: 1000, height: 1000},
