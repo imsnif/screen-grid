@@ -118,7 +118,7 @@ test('changeCurWindow(direction, amount): ' +
 })
 
 test('increaseAndFillCurWinSize(direction, amount, winConstructor, opts, displayId): ' +
-     'increases size and fills gtid', t => {
+     'increases size and fills grid', t => {
   t.plan(4)
   const increaseAndFillSize = sinon.spy()
   const maxAllPanes = sinon.spy()
@@ -190,5 +190,81 @@ test('increaseAndFillCurWinSize(direction, amount): ' +
   const createWindow = sinon.spy()
   const { increaseAndFillCurWinSize } = stubWindowChanger(pane)({createWindow})
   increaseAndFillCurWinSize('left', 30)
+  t.ok(createWindow.notCalled, 'no new windows created')
+})
+
+test('decreaseAndFillCurWinSize(direction, amount, winConstructor, opts, displayId): ' +
+     'decreases size and fills gtid', t => {
+  t.plan(4)
+  const decreaseSizeDirectional = sinon.spy()
+  const maxAllPanes = sinon.spy()
+  const findGaps = () => [
+    {x: 0, y: 0, width: 100, height: 100},
+    {x: 100, y: 0, width: 100, height: 100}
+  ]
+  const grid = {findGaps, maxAllPanes}
+  const pane = {id: 1, decreaseSizeDirectional, grid, wrapped: {constructor: 1}}
+  const createWindow = sinon.spy()
+  const { decreaseAndFillCurWinSize } = stubWindowChanger(pane)({createWindow})
+  decreaseAndFillCurWinSize('left', 30, 'winConstructor', {a: 1, b: 2}, 1)
+  t.ok(
+    decreaseSizeDirectional.calledWith('left', 30),
+    'pane decreaseandFillSize method called with proper params'
+  )
+  t.ok(
+    maxAllPanes.calledOnce,
+    'maxAllPanes called once'
+  )
+  t.ok(createWindow.calledWith(1, 'winConstructor',
+    {
+      x: 0,
+      y: 0,
+      width: 100,
+      height: 100,
+      a: 1,
+      b: 2
+    }
+  ), 'first window created in first gap with proper params')
+  t.ok(createWindow.calledWith(1, 'winConstructor',
+    {
+      x: 100,
+      y: 0,
+      width: 100,
+      height: 100,
+      a: 1,
+      b: 2
+    }
+  ), 'second window created in second gap with proper params')
+})
+
+test('decreaseAndFillCurWinSize(direction, amount): ' +
+     'does not fill grid if failed to decrease pane size', t => {
+  t.plan(2)
+  const decreaseAndFillSize = sinon.stub().throws()
+  const maxAllPanes = sinon.spy()
+  const findGaps = () => [
+    {x: 0, y: 0, width: 100, height: 100},
+    {x: 100, y: 0, width: 100, height: 100}
+  ]
+  const grid = {findGaps, maxAllPanes}
+  const pane = {id: 1, decreaseAndFillSize, grid, wrapped: {constructor: 1}}
+  const createWindow = sinon.spy()
+  const { decreaseAndFillCurWinSize } = stubWindowChanger(pane)({createWindow})
+  decreaseAndFillCurWinSize('left', 30)
+  t.ok(maxAllPanes.notCalled, 'maxAllPanes not called')
+  t.ok(createWindow.notCalled, 'createWindow not called')
+})
+
+test('decreaseAndFillCurWinSize(direction, amount): ' +
+     'does not create new windows if no gaps are found', t => {
+  t.plan(1)
+  const decreaseAndFillSize = sinon.spy()
+  const maxAllPanes = sinon.spy()
+  const findGaps = () => []
+  const grid = {findGaps, maxAllPanes}
+  const pane = {id: 1, decreaseAndFillSize, grid, wrapped: {constructor: 1}}
+  const createWindow = sinon.spy()
+  const { decreaseAndFillCurWinSize } = stubWindowChanger(pane)({createWindow})
+  decreaseAndFillCurWinSize('left', 30)
   t.ok(createWindow.notCalled, 'no new windows created')
 })
