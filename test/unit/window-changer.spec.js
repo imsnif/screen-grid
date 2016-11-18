@@ -117,7 +117,8 @@ test('changeCurWindow(direction, amount): ' +
   t.pass('no-op')
 })
 
-test('increaseAndFillCurWinSize(direction, amount): increases size and fills gtid', t => {
+test('increaseAndFillCurWinSize(direction, amount, winConstructor, opts, displayId): ' +
+     'increases size and fills gtid', t => {
   t.plan(4)
   const increaseAndFillSize = sinon.spy()
   const maxAllPanes = sinon.spy()
@@ -129,7 +130,7 @@ test('increaseAndFillCurWinSize(direction, amount): increases size and fills gti
   const pane = {id: 1, increaseAndFillSize, grid, wrapped: {constructor: 1}}
   const createWindow = sinon.spy()
   const { increaseAndFillCurWinSize } = stubWindowChanger(pane)({createWindow})
-  increaseAndFillCurWinSize('left', 30)
+  increaseAndFillCurWinSize('left', 30, 'winConstructor', {a: 1, b: 2}, 1)
   t.ok(
     increaseAndFillSize.calledWith('left', 30),
     'pane increaseandFillSize method called with proper params'
@@ -138,26 +139,24 @@ test('increaseAndFillCurWinSize(direction, amount): increases size and fills gti
     maxAllPanes.calledOnce,
     'maxAllPanes called once'
   )
-  t.ok(createWindow.calledWith(0, 1,
+  t.ok(createWindow.calledWith(1, 'winConstructor',
     {
       x: 0,
       y: 0,
       width: 100,
       height: 100,
-      frame: false,
-      skipTaskbar: true,
-      fillOnClose: true
+      a: 1,
+      b: 2
     }
   ), 'first window created in first gap with proper params')
-  t.ok(createWindow.calledWith(0, 1,
+  t.ok(createWindow.calledWith(1, 'winConstructor',
     {
       x: 100,
       y: 0,
       width: 100,
       height: 100,
-      frame: false,
-      skipTaskbar: true,
-      fillOnClose: true
+      a: 1,
+      b: 2
     }
   ), 'second window created in second gap with proper params')
 })
