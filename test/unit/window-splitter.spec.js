@@ -68,6 +68,26 @@ test('splitWindow(screenId, winConstructor, winParams, axis, winId): ' +
   }), 'new window created half the size of previous')
 })
 
+test('splitWindow(screenId, winConstructor, winParams, axis, winId): ' +
+     'does not split window if cannot find pane', t => {
+  t.plan(2)
+  const changeSize = sinon.spy()
+  const createWindow = sinon.spy()
+  const pane = null
+  const grid = 'I am a grid'
+  const grids = [ grid ]
+  const { splitWindow } = stubWindowSplitter(pane)({grids, createWindow})
+  splitWindow(
+    1,
+    {fakeWinConstructor: 'fakeWinConstructor'},
+    {fakeWinParams: 'fakeWinParams'},
+    'vertical',
+    1
+  )
+  t.ok(changeSize.notCalled, 'no-op')
+  t.ok(createWindow.notCalled, 'no-op')
+})
+
 test('splitCurrentWindow(screenId, winConstructor, winParams, axis): ' +
      'calls splitWindow with id of focused window', t => {
   t.plan(1)
