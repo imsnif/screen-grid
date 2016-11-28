@@ -21,6 +21,7 @@ test('splitWindow(screenId, winConstructor, winParams, axis, winId): ' +
   t.plan(2)
   const changeSize = sinon.spy()
   const createWindow = sinon.spy()
+  const listeners = 'listeners'
   const pane = {id: 1, x: 0, y: 0, height: 100, width: 100, changeSize}
   const grid = 'I am a grid'
   const grids = [ grid ]
@@ -30,7 +31,8 @@ test('splitWindow(screenId, winConstructor, winParams, axis, winId): ' +
     {fakeWinConstructor: 'fakeWinConstructor'},
     {fakeWinParams: 'fakeWinParams'},
     'horizontal',
-    1
+    1,
+    listeners
   )
   t.ok(changeSize.calledWith(100, 50), 'window resized to half size horizontally')
   t.ok(createWindow.calledWith(1, {fakeWinConstructor: 'fakeWinConstructor'}, {
@@ -39,7 +41,7 @@ test('splitWindow(screenId, winConstructor, winParams, axis, winId): ' +
     height: 50,
     x: 0,
     y: 50
-  }), 'new window created half the size of previous')
+  }, listeners), 'new window created half the size of previous')
 })
 
 test('splitWindow(screenId, winConstructor, winParams, axis, winId): ' +

@@ -129,9 +129,10 @@ test('increaseAndFillCurWinSize(direction, amount, winConstructor, opts, display
   ]
   const grid = {findGaps, maxAllPanes}
   const pane = {id: 1, increaseAndFillSize, grid, wrapped: {constructor: 1}}
+  const listeners = 'listeners'
   const createWindow = sinon.spy()
   const { increaseAndFillCurWinSize } = stubWindowChanger(pane)({createWindow})
-  increaseAndFillCurWinSize('left', 30, 'winConstructor', {a: 1, b: 2}, 1)
+  increaseAndFillCurWinSize('left', 30, 'winConstructor', {a: 1, b: 2}, 1, listeners)
   t.ok(
     increaseAndFillSize.calledWith('left', 30),
     'pane increaseandFillSize method called with proper params'
@@ -148,7 +149,8 @@ test('increaseAndFillCurWinSize(direction, amount, winConstructor, opts, display
       height: 100,
       a: 1,
       b: 2
-    }
+    },
+    listeners
   ), 'first window created in first gap with proper params')
   t.ok(createWindow.calledWith(1, 'winConstructor',
     {
@@ -223,10 +225,11 @@ test('decreaseAndFillCurWinSize(direction, amount, winConstructor, opts, display
     {x: 100, y: 0, width: 100, height: 100}
   ]
   const grid = {findGaps, maxAllPanes}
+  const listeners = 'listeners'
   const pane = {id: 1, decreaseSizeDirectional, grid, wrapped: {constructor: 1}}
   const createWindow = sinon.spy()
   const { decreaseAndFillCurWinSize } = stubWindowChanger(pane)({createWindow})
-  decreaseAndFillCurWinSize('left', 30, 'winConstructor', {a: 1, b: 2}, 1)
+  decreaseAndFillCurWinSize('left', 30, 'winConstructor', {a: 1, b: 2}, 1, listeners)
   t.ok(
     decreaseSizeDirectional.calledWith('left', 30),
     'pane decreaseandFillSize method called with proper params'
@@ -243,7 +246,8 @@ test('decreaseAndFillCurWinSize(direction, amount, winConstructor, opts, display
       height: 100,
       a: 1,
       b: 2
-    }
+    },
+    listeners
   ), 'first window created in first gap with proper params')
   t.ok(createWindow.calledWith(1, 'winConstructor',
     {
@@ -253,7 +257,8 @@ test('decreaseAndFillCurWinSize(direction, amount, winConstructor, opts, display
       height: 100,
       a: 1,
       b: 2
-    }
+    },
+    listeners
   ), 'second window created in second gap with proper params')
 })
 
