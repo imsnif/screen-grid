@@ -216,7 +216,7 @@ test('increaseAndFillCurWinSize(direction, amount): ' +
 })
 
 test('decreaseAndFillCurWinSize(direction, amount, winConstructor, opts, displayId): ' +
-     'decreases size and fills gtid', t => {
+     'decreases size and fills grid', t => {
   t.plan(4)
   const decreaseSizeDirectional = sinon.spy()
   const maxAllPanes = sinon.spy()
@@ -235,7 +235,7 @@ test('decreaseAndFillCurWinSize(direction, amount, winConstructor, opts, display
     'pane decreaseandFillSize method called with proper params'
   )
   t.ok(
-    maxAllPanes.calledOnce,
+    maxAllPanes.calledWith({exclude: 1}),
     'maxAllPanes called once'
   )
   t.ok(createWindow.calledWith(1, 'winConstructor',
