@@ -23,7 +23,7 @@ test('maxSize(direction): maxes size of focused pane', t => {
   const { maxSize } = stubWindowMaxer(pane)({grids})
   maxSize('left')
   t.ok(
-    pane.maxSize.calledWith({left: true}),
+    pane.maxSize.calledWith('left'),
     'direction formatted and passed to maxSize of pane'
   )
 })
