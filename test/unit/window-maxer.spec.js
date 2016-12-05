@@ -45,7 +45,7 @@ test('maxLoc(direction): maxes location of focused pane', t => {
   const { maxLoc } = stubWindowMaxer(pane)({grids})
   maxLoc('left')
   t.ok(
-    pane.maxOrSkipLoc.calledWith({left: true}),
+    pane.maxOrSkipLoc.calledWith('left'),
     'direction formatted and passed to maxOrSkipLoc'
   )
 })
